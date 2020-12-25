@@ -13,5 +13,24 @@
    3、参考资料 <br />
 其中问题放在question目录，sql代码放在code目录，参考资料放在reference目录。
 
+##
+Q1: oracle不像其他sql语言一样，可以用drop table if exists table_name这种方式删表。
+那么在oracle中如何实现类似的功能呢？<br />
+Code:
+```
+begin 
+execute immediate 'drop table table_name';
+exception 
+when others then 
+    if sqlcode <> -942 then 
+        raise; 
+        end if; 
+end;
+```
+Reference:<br />
+https://stackoverflow.com/questions/1799128/oracle-if-table-exists
+
+
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
