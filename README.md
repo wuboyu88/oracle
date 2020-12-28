@@ -11,26 +11,55 @@
    1、问题 <br />
    2、代码 <br />
    3、参考资料 <br />
-其中问题放在question目录，sql代码放在code目录，参考资料放在reference目录。
-
+   
 ##
 Q1: oracle不像其他sql语言一样，可以用drop table if exists table_name这种方式删表。
 那么在oracle中如何实现类似的功能呢？<br />
 Code:
 ```sql
-begin 
-execute immediate 'drop table table_name';
-exception 
-when others then 
-    if sqlcode <> -942 then 
-        raise; 
-        end if; 
-end;
+BEGIN
+    EXECUTE IMMEDIATE 'drop table table_name';
+EXCEPTION
+    WHEN OTHERS THEN
+      IF SQLCODE <> -942 THEN
+        RAISE;
+      END IF;
+END; 
 ```
-Reference:<br />
+References:<br />
 https://stackoverflow.com/questions/1799128/oracle-if-table-exists
 
+##
+Q2: oracle建表和插入数据顺序需保持一致<br />
+Code:
+```sql
+-- 建表(字段顺序为a->b)
+CREATE TABLE table1
+  (
+     a NUMBER,
+     b NUMBER
+  );
 
+/*错误的插表方式*/
+-- 插入数据(字段顺序为b->a,与建表时不一致)
+INSERT INTO table1
+SELECT b,
+       a
+FROM   table2;
+
+COMMIT;
+
+/*正确的插表方式*/
+-- 插入数据(字段顺序为a->b,与建表时一致)
+INSERT INTO table1
+SELECT a,
+       b
+FROM   table2;
+
+COMMIT;    
+```
+References:<br />
+Not found
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
