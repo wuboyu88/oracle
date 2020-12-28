@@ -89,12 +89,31 @@ ORDER  BY t3.logon_time;
 
 -- 2.赋予username权限 
 GRANT ALTER SYSTEM TO upro_test; --对应上面的username 
+
 -- 3.杀掉会话 
 ALTER SYSTEM kill SESSION 'sid,serial#'; --对应上面的sid和serial# 
 ```
 References:<br />
 https://blog.csdn.net/deniro_li/article/details/81085758 <br />
 https://blog.csdn.net/hehuyi_in/article/details/89669553
+
+##
+Q5: oracle表空间查询<br />
+Code:
+```sql
+-- 查看单表占用空间(注意表名需大写) 
+SELECT segment_name, 
+       bytes / ( 1024 * 1024 * 1024 ) AS space_gb 
+FROM   user_segments 
+WHERE  segment_name = 'S0CBI_P1_RESULT'; 
+
+-- 查看剩余表空间
+SELECT SUM(bytes) / ( 1024 * 1024 * 1024 ) AS space_gb 
+FROM   dba_free_space 
+WHERE  tablespace_name = 'UPRO';
+```
+References:<br />
+https://www.cnblogs.com/pejsidney/p/8057372.html
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
