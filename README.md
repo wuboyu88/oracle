@@ -93,7 +93,7 @@ GRANT ALTER SYSTEM TO upro_test; --对应上面的username
 ALTER SYSTEM kill SESSION 'sid,serial#'; --对应上面的sid和serial# 
 ```
 References:<br />
-https://blog.csdn.net/deniro_li/article/details/81085758
+https://blog.csdn.net/deniro_li/article/details/81085758 <br />
 https://blog.csdn.net/hehuyi_in/article/details/89669553
 
 ## License
