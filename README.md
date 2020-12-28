@@ -9,7 +9,7 @@
 ## 展示方式说明
 所有的展示都是通过以下三个部分组成：<br />
    1、问题 <br />
-   2、代码 <br />
+   2、代码or解决方案 <br />
    3、参考资料 <br />
    
 ##
@@ -60,6 +60,41 @@ COMMIT;
 ```
 References:<br />
 Not found
+
+##
+Q3: oracle如何解决plsql中保存的.sql文件中文注释为乱码的情况？<br />
+Solution:<br />
+configure --> preferences --> files --> format --> encoding --> always UTF8<br />
+References:<br />
+https://www.jianshu.com/p/1ecb687d1433
+
+##
+Q4: oracle报"ORA-00054 资源正忙, 但指定以 NOWAIT 方式获取资源, 或者超时失效"问题如何解决？<br />
+Code:
+```sql
+-- 1.找出引发锁的会话和表名 
+SELECT t1.session_id, 
+       t2.owner, 
+       t2.object_name, 
+       t3.username, 
+       t3.sid, 
+       t3.serial#, 
+       t3.logon_time 
+FROM   v$locked_object t1 
+       join dba_objects t2 
+         ON t1.object_id = t2.object_id 
+       join v$session t3 
+         ON t1.session_id = t3.sid 
+ORDER  BY t3.logon_time; 
+
+-- 2.赋予username权限 
+GRANT ALTER SYSTEM TO upro_test; --对应上面的username 
+-- 3.杀掉会话 
+ALTER SYSTEM kill SESSION 'sid,serial#'; --对应上面的sid和serial# 
+```
+References:<br />
+https://blog.csdn.net/deniro_li/article/details/81085758
+https://blog.csdn.net/hehuyi_in/article/details/89669553
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
