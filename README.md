@@ -81,9 +81,9 @@ SELECT t1.session_id,
        t3.serial#, 
        t3.logon_time 
 FROM   v$locked_object t1 
-       join dba_objects t2 
+       JOIN dba_objects t2 
          ON t1.object_id = t2.object_id 
-       join v$session t3 
+       JOIN v$session t3 
          ON t1.session_id = t3.sid 
 ORDER  BY t3.logon_time; 
 
@@ -91,7 +91,7 @@ ORDER  BY t3.logon_time;
 GRANT ALTER SYSTEM TO upro_test; --对应上面的username 
 
 -- 3.杀掉会话 
-ALTER SYSTEM kill SESSION 'sid,serial#'; --对应上面的sid和serial# 
+ALTER SYSTEM KILL SESSION 'sid,serial#'; --对应上面的sid和serial# 
 ```
 References:<br />
 https://blog.csdn.net/deniro_li/article/details/81085758 <br />
@@ -114,6 +114,35 @@ WHERE  tablespace_name = 'UPRO';
 ```
 References:<br />
 https://www.cnblogs.com/pejsidney/p/8057372.html
+
+##
+Q6: oracle数据库无法匹配中文<br />
+Solution:<br />
+添加环境变量<br />
+变量名：NLS_LANG<br />
+变量值：SIMPLIFIED CHINESE_CHINA.ZHS16GBK<br />
+References:<br />
+https://www.cnblogs.com/1201x/p/6513681.html
+
+##
+Q7: oracle得到指定日期的上个月最后一天<br />
+Code:
+```sql
+SELECT LAST_DAY(ADD_MONTHS(yourdate,-1))
+```
+References:<br />
+https://stackoverflow.com/questions/4957224/getting-last-day-of-previous-month-in-oracle-function
+
+##
+Q8: oracle存储过程默认参数如何设置<br />
+Code:
+```sql
+CREATE OR REPLACE PROCEDURE my_procedure(cutoff_date IN VARCHAR2 DEFAULT '2020-05-31',
+                                         nb_days     IN NUMBER DEFAULT 7)
+```
+References:<br />
+https://oracle-patches.com/en/databases/sql/3777-pl-sql-procedure-setting-default-parameter-values
+
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
