@@ -246,7 +246,7 @@ References:<br />
 https://blog.csdn.net/wtl1992/article/details/100553738
 
 ##
-Q15: oracle中如何创建分区表COMMIT<br />
+Q15: oracle中如何创建分区表<br />
 Code:
 ```sql
 # 例子中是以dt作为分区字段，按天创建分区；将2018-11-01之前的当成一个分区
