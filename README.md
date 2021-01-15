@@ -330,13 +330,13 @@ from dask.diagnostics import ProgressBar
 from sqlalchemy import create_engine
 from sqlalchemy.types import VARCHAR
 
-username = ''
-password = ''
-host = ''
-port = ''
-service_name = ''
-table_name = ''
-file_name = ''
+username = '****'
+password = '****'
+host = '****'
+port = '****'
+service_name = '****'
+table_name = '****'
+file_name = '****'
 npartitions = 10
                                                                      
 engine = create_engine('oracle+cx_oracle://{}:{}@{}:{}/?service_name={}'.format(username, password, host, port,
