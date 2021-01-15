@@ -247,6 +247,7 @@ https://blog.csdn.net/wtl1992/article/details/100553738
 
 ##
 Q15: oracle中如何创建分区表COMMIT<br />
+Code:
 ```sql
 # 例子中是以dt作为分区字段，按天创建分区；将2018-11-01之前的当成一个分区
 CREATE TABLE table1
@@ -271,7 +272,7 @@ https://stackoverflow.com/questions/52565289/execution-28-6-ora-00600-internal-e
 
 ##
 Q17: oracle执行存储过程报错ORA-01031:权限不足<br />
-Solution:在oracle存储过程中，默认是可以直接执行DML和DQL的，但是执行CREATE TABLE这种的DDL则需要借助EXECUTE IMMEDIATE ···了。
+Solution: 在oracle存储过程中，默认是可以直接执行DML和DQL的，但是执行CREATE TABLE这种的DDL则需要借助EXECUTE IMMEDIATE ···了。
 CREATE TABLE想使用CREATE ANY TABLE权限，而CREATE ANY TABLE权限来自DBA角色，默认情况下，虽然在会话环境中可见，
 但在存储过程中不可见（无效），需要显式授权<br />
 Code:
