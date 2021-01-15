@@ -1,7 +1,7 @@
 # Oracle使用指南
 
-此github旨在解决项目实施过程中遇到的一些共性问题。总结的难免有纰漏之处。如果有任何建议，还望各位读者指出。如果有所补充，也欢迎
-新建一个branch或者邮箱联系我予以添加。本人邮箱wuboyu88@163.com
+此github旨在解决项目实施过程中遇到的一些共性问题。总结的难免有纰漏之处。如果有任何建议，还望各位读者指出。如果有所补充，
+也欢迎新建一个branch或者邮箱联系我予以添加。本人邮箱wuboyu88@163.com
 
 ![oracle_logo](./image/oracle_logo.png)
 
@@ -179,12 +179,12 @@ Solution: 我们都知道sql语句可以以分号(;)结尾，通常情况下这�
 <br />
 Code:
 ```sql
-create OR replace PROCEDURE procedure1 AS 
+CREATE OR REPLACE PROCEDURE procedure1 AS 
 BEGIN 
 ... 
 END;
 /
-CREATE OR replace PROCEDURE procedure2 AS 
+CREATE OR REPLACE PROCEDURE procedure2 AS 
 BEGIN 
 ... 
 END;
@@ -193,7 +193,55 @@ END;
 References:<br />
 https://stackoverflow.com/questions/1079949/when-do-i-need-to-use-a-semicolon-vs-a-slash-in-oracle-sql
 
+##
+Q12: oracle并行优化之PARALLEL的使用<br />
+Solution: PARALLEL可以应用在三个场景中(CREATE TABLE、INSERT INTO、SELECT)，
+有的时候PARALLEL会以注释的形式出现在代码里，让大家觉得可有可无，请注意，
+这不是普通的注释。<br />
+Code:
+```sql
+# 1.CREATE TABLE
+CREATE TABLE table1 PARALLEL NOLOGGING AS
+SELECT * FROM table2;
+/
+# 2.INSERT INTO & SELECT
+INSERT INTO /*+ APPEND PARALLEL(table1) NOLOGGING */ table1
+  SELECT /*+ PARALLEL NOLOGGING */ a, b FROM table2;
+/
+```
+References:<br />
+https://docs.oracle.com/database/121/VLDBG/GUID-7A6185D1-AEF3-48C3-A704-8E3D7D3A4AFD.htm#VLDBG1526
 
+##
+Q13: oracle存储过程中字符串的转化<br />
+Solution: 简而言之，普通字符常量的单引号(')变成双引号(''),
+传入的变量在其两边加上'''|| ||''。另外要注意，oracle中的单引号(')和双引号('')
+意义是不一样的，不像python中两者基本等价。<br />
+Code:
+```sql
+CREATE OR REPLACE PROCEDURE procedure1(cutoff_date in VARCHAR2) IS
+  sql_str VARCHAR2(20000);
+BEGIN
+  sql_str := 'CREATE TABLE table1 AS
+              SELECT * FROM table2
+              WHERE dt = TO_DATE('''|| cutoff_date ||''', ''YYYY-MM-DD'')
+                AND a in (''1'', ''2'')';
+  EXECUTE IMMEDIATE sql_str;
+END;
+```
+References:<br />
+https://www.itdaan.com/tw/18d29a2d6d9a17c524919f7821b3254b
+
+##
+Q14: oracle中哪些语句需要COMMIT<br />
+Solution: <br />
+DDL(数据定义语言) - CREATE、ALTER、DROP这些语句自动提交，无需用COMMIT提交。<br />
+DQL(数据查询语言) - SELECT查询语句不存在提交问题。<br />
+DML(数据操纵语言) - INSERT、UPDATE、DELETE 这些语句需要COMMIT才能提交。<br />
+DTL(事务控制语言) - COMMIT、ROLLBACK 事务提交与回滚语句。<br />
+DCL(数据控制语言) - GRANT、REVOKE 授予权限与回收权限语句。<br />
+References:<br />
+https://blog.csdn.net/wtl1992/article/details/100553738
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
