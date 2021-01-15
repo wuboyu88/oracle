@@ -282,5 +282,86 @@ GRANT CREATE ANY TABLE TO username;
 References:<br />
 https://www.cnblogs.com/zjfjava/p/9057779.html
 
+## 
+Q18: 通过python从oracle下载数据<br />
+Code:
+```python
+import cx_Oracle
+import csv
+
+
+def oracle_to_csv(table_name_or_sql_str, output_file_path, username='****', password='****', host='****',
+                  port='****', service_name='****', is_sql_str=False):
+    db = cx_Oracle.connect(username, password, '{}:{}/{}'.format(host, port, service_name))
+
+    print_header = True
+    output_file = open(output_file_path, 'w')
+    output = csv.writer(output_file, dialect='excel')
+    if not is_sql_str:
+        sql = 'select * from {}'.format(table_name_or_sql_str)
+    else:
+        sql = table_name_or_sql_str
+
+    cr = db.cursor()
+    cr.execute(sql)
+
+    if print_header:
+        cols = [ele[0] for ele in cr.description]
+        output.writerow(cols)
+
+    for row_data in cr:
+        output.writerow(row_data)
+    output_file.close()
+
+    db.close()
+```
+References:<br />
+Not found
+
+##
+Q19: 通过python上传数据到oracle<br />
+Solution: dask的to_sql函数，一方面可以实现上传的功能，
+另一方面可以看到上传进度条。
+Code: 
+```python
+import pandas as pd
+import dask.dataframe as dd
+from dask.diagnostics import ProgressBar
+from sqlalchemy import create_engine
+from sqlalchemy.types import VARCHAR
+
+username = ''
+password = ''
+host = ''
+port = ''
+service_name = ''
+table_name = ''
+file_name = ''
+npartitions = 10
+                                                                     
+engine = create_engine('oracle+cx_oracle://{}:{}@{}:{}/?service_name={}'.format(username, password, host, port,
+                                                                                service_name))
+conn = engine.raw_connection()
+
+df_result = pd.read_csv(file_name)
+dd_result_all = dd.from_pandas(df_result, npartitions=npartitions)
+
+pbar_rows = 0
+
+for i in range(dd_result_all.npartitions):
+    dd_partition = dd_result_all.get_partition(i)
+    with ProgressBar():
+        dd_partition.to_sql(table_name, engine, if_exists='append', index=False,
+                            dtype={'id': VARCHAR(11)})
+    pbar_rows += len(dd_partition)
+    all_rows = len(dd_result_all)
+    pbar_rate = round(pbar_rows / all_rows, 2) * 100
+    print('python logging: [{}%({}/{}) rows insert finished]'.format(pbar_rate, pbar_rows, all_rows))
+conn.close()
+```
+References:<br />
+https://stackoverflow.com/questions/62404502/using-dasks-new-to-sql-for-improved-efficiency-memory-speed-or-alternative-to
+
+# TO BE CONTINUE
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
