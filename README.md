@@ -1,7 +1,6 @@
 # Oracle使用指南
 
-此github建立的意义并非是讲oracle细枝末节的各种语法，而是旨在解决项目实践中遇到的一些共性问题。
-鉴于本人精力有限，总结的难免有纰漏之处。如果有任何建议，还望各位读者指出。如果有所补充，也欢迎
+此github旨在解决项目实施过程中遇到的一些共性问题。总结的难免有纰漏之处。如果有任何建议，还望各位读者指出。如果有所补充，也欢迎
 新建一个branch或者邮箱联系我予以添加。本人邮箱wuboyu88@163.com
 
 ![oracle_logo](./image/oracle_logo.png)
@@ -69,7 +68,7 @@ References:<br />
 https://www.jianshu.com/p/1ecb687d1433
 
 ##
-Q4: oracle报"ORA-00054 资源正忙, 但指定以 NOWAIT 方式获取资源, 或者超时失效"问题如何解决？<br />
+Q4: oracle报"ORA-00054 资源正忙，但指定以 NOWAIT 方式获取资源，或者超时失效"问题如何解决？<br />
 Code:
 ```sql
 -- 1.找出引发锁的会话和表名 
@@ -142,6 +141,58 @@ CREATE OR REPLACE PROCEDURE my_procedure(cutoff_date IN VARCHAR2 DEFAULT '2020-0
 ```
 References:<br />
 https://oracle-patches.com/en/databases/sql/3777-pl-sql-procedure-setting-default-parameter-values
+
+##
+Q9: oracle建表之后加主键约束<br />
+Code:
+```sql
+ALTER TABLE tablename
+  ADD CONSTRAINT pk_id PRIMARY KEY (id); 
+```
+References:<br />
+https://blog.csdn.net/yuan_csdn1/article/details/78158247
+
+##
+Q10: oracle自定义函数性能优化<br />
+Solution: oracle通过关键字DETERMINISTIC来表明一个函数（Function）是确定性的，确定性函数可以用于创建基于函数的索引。
+因此自定义函数加了DETERMINISTIC关键字可以提高执行效率。<br />
+Code:
+```sql
+/*自定义get_last_day_n_month获得前n个月的最后一天*/ 
+CREATE OR REPLACE FUNCTION get_last_day_n_month(date_str IN VARCHAR2, 
+                                                n        IN NUMBER) 
+  RETURN DATE DETERMINISTIC IS 
+  res DATE; 
+BEGIN 
+  res := LAST_DAY(ADD_MONTHS(TO_DATE(date_str, 'YYYY-MM-DD'), -n)); 
+  RETURN res; 
+END;
+```
+References:<br />
+https://www.cnblogs.com/kerrycode/p/9099507.html
+
+##
+Q11: oracle斜杠(/)的使用场景<br />
+Solution: 我们都知道sql语句可以以分号(;)结尾，通常情况下这么做都没有任何问题。
+但是当我们想批量执行代码块时，比如想批量执行100个建表语句或者存储过程时，如果不加
+斜杠(/)就会只执行第一个代码块，后续无法执行。因此建议用斜杠(/)对工作单元进行隔离。
+<br />
+Code:
+```sql
+create OR replace PROCEDURE procedure1 AS 
+BEGIN 
+... 
+END;
+/
+CREATE OR replace PROCEDURE procedure2 AS 
+BEGIN 
+... 
+END;
+/
+```
+References:<br />
+https://stackoverflow.com/questions/1079949/when-do-i-need-to-use-a-semicolon-vs-a-slash-in-oracle-sql
+
 
 
 ## License
