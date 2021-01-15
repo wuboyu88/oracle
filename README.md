@@ -215,7 +215,7 @@ https://docs.oracle.com/database/121/VLDBG/GUID-7A6185D1-AEF3-48C3-A704-8E3D7D3A
 ##
 Q13: oracle存储过程中字符串的转化<br />
 Solution: 简而言之，普通字符常量的单引号(')变成双引号(''),
-传入的变量在其两边加上'''|| ||''。另外要注意，oracle中的单引号(')和双引号('')
+传入的变量在其两边加上'''|| ||'''。另外要注意，oracle中的单引号(')和双引号('')
 意义是不一样的，不像python中两者基本等价。<br />
 Code:
 ```sql
@@ -234,7 +234,9 @@ https://www.itdaan.com/tw/18d29a2d6d9a17c524919f7821b3254b
 
 ##
 Q14: oracle中哪些语句需要COMMIT<br />
-Solution: <br />
+Solution: COMMIT操作非常重要，比如UPDATE后，没有及时COMMIT，
+很容易导致死锁问题。就好比我们想对一个文件一边写入，一边删除一样。
+类似的，python也有个进程锁GIL锁（全局解释器锁）<br />
 DDL(数据定义语言) - CREATE、ALTER、DROP这些语句自动提交，无需用COMMIT提交。<br />
 DQL(数据查询语言) - SELECT查询语句不存在提交问题。<br />
 DML(数据操纵语言) - INSERT、UPDATE、DELETE 这些语句需要COMMIT才能提交。<br />
@@ -242,6 +244,42 @@ DTL(事务控制语言) - COMMIT、ROLLBACK 事务提交与回滚语句。<br />
 DCL(数据控制语言) - GRANT、REVOKE 授予权限与回收权限语句。<br />
 References:<br />
 https://blog.csdn.net/wtl1992/article/details/100553738
+
+##
+Q15: oracle中如何创建分区表COMMIT<br />
+```sql
+# 例子中是以dt作为分区字段，按天创建分区；将2018-11-01之前的当成一个分区
+CREATE TABLE table1
+(
+id VARCHAR(99),
+dt DATE,
+a NUMBER,
+b NUMBER,
+PRIMARY KEY(dt, id))
+PARTITION BY RANGE(dt) INTERVAL (NUMTODSINTERVAL(1, 'day')) 
+(PARTITION part_t01 VALUES LESS THAN(TO_DATE('2018-11-01', 'YYYY-MM-DD')));
+```
+References:<br />
+https://www.cnblogs.com/yuxiaole/p/9809294.html
+
+##
+Q16: ORA-00600: internal error code, arguments: [], [], [], [], []<br />
+Solution: ORA-00600是oracle的一个尚未解决的bug，通常会出现在建表的时候，
+目前查到的解决方法是在最后加上WHERE rownum > -1 <br />
+References:<br />
+https://stackoverflow.com/questions/52565289/execution-28-6-ora-00600-internal-error-code-arguments
+
+##
+Q17: oracle执行存储过程报错ORA-01031:权限不足<br />
+Solution:在oracle存储过程中，默认是可以直接执行DML和DQL的，但是执行CREATE TABLE这种的DDL则需要借助EXECUTE IMMEDIATE ···了。
+CREATE TABLE想使用CREATE ANY TABLE权限，而CREATE ANY TABLE权限来自DBA角色，默认情况下，虽然在会话环境中可见，
+但在存储过程中不可见（无效），需要显式授权<br />
+Code:
+```sql
+GRANT CREATE ANY TABLE TO username;
+```
+References:<br />
+https://www.cnblogs.com/zjfjava/p/9057779.html
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
