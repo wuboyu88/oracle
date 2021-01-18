@@ -420,6 +420,21 @@ def rm_sql_comments(file_in, file_out, rm_all_comments=False):
 **References**:<br />
 Not found
 
+##
+**Q22**: oracle中connect by level得到连续的月份<br />
+**Code**:
+```sql
+# 得到从2018年1月31号起两年的月份
+SELECT ADD_MONTHS(TO_DATE('2018-01-31', 'YYYY-MM-DD'), level - 1) m
+  FROM dual
+CONNECT BY LEVEL <=
+           MONTHS_BETWEEN(TO_DATE('2018-01-31', 'YYYY-MM-DD'),
+                          ADD_MONTHS(TO_DATE('2018-01-31', 'YYYY-MM-DD'), -24))
+  ORDER BY m;
+```
+**References**:<br />
+https://www.cnblogs.com/jason2018524/p/10288258.html
+
 # TO BE CONTINUE
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
