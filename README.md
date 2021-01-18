@@ -362,6 +362,16 @@ conn.close()
 References:<br />
 https://stackoverflow.com/questions/62404502/using-dasks-new-to-sql-for-improved-efficiency-memory-speed-or-alternative-to
 
+Q20: oracle得到两个日期相差的分钟数<br />
+Solution: 需要注意的是，两个日期相减默认得到的是天数，因此*24*6可以得到分钟数；
+其次，24h制的时分秒表达是HH24:MI:SS，而不是HH:MM:SS。<br />
+Code:
+```sql
+SELECT ROUND(TO_NUMBER(TO_DATE('2011-10-12 15:10:00','YYYY-MM-DD HH24:MI:SS')-TO_DATE('2011-10-12 14:23:00','YYYY-MM-DD HH24:MI:SS'))*24*60) FROM DUAL;
+```
+References:<br />
+https://zhidao.baidu.com/question/1307148614295706059.html
+
 # TO BE CONTINUE
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
