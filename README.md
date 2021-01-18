@@ -418,7 +418,7 @@ def rm_sql_comments(file_in, file_out, rm_all_comments=False):
                 f_out.write(re.sub(re.compile(r'--.*?\n'), '\n', sql_codes))
 ```
 References:<br />
-None
+Not found
 
 # TO BE CONTINUE
 ## License
