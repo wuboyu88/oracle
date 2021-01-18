@@ -390,6 +390,36 @@ SELECT ROUND(TO_NUMBER(TO_DATE('2011-10-12 15:10:00','YYYY-MM-DD HH24:MI:SS')-TO
 References:<br />
 https://zhidao.baidu.com/question/1307148614295706059.html
 
+Q21: 如何去掉oracle代码里的注释<br />
+Solution: 这里需要分情况讨论，假如想删掉所有注释，甚至包括不是注释的
+/*+ PARALLEL NOLOGGING */，那么可以用sqlparse；如果只是想删掉
+某些的字段注释，比如通过--注释的部分，可以用正则表达式替换。<br />
+Code:
+```python
+import sqlparse
+import re
+
+
+def rm_sql_comments(file_in, file_out, rm_all_comments=False):
+    """
+
+    :param file_in: 带注释的sql文件
+    :param file_out: 去除注释的sql文件
+    :param rm_all_comments: 是否删掉所有注释
+    :return:
+    """
+    with open(file_out, 'w', encoding='utf-8') as f_out:
+        with open(file_in, encoding='utf-8') as f_in:
+            sql_codes = f_in.read()
+            if rm_all_comments:
+                f_out.write(sqlparse.format(sql_codes, strip_comments=True))
+            else:
+                # 将--到换行符\n之间的所有内容替换成\n，其中.表示任意字符，*表示任意次，?表示非贪婪模式
+                f_out.write(re.sub(re.compile(r'--.*?\n'), '\n', sql_codes))
+```
+References:<br />
+None
+
 # TO BE CONTINUE
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
