@@ -236,7 +236,8 @@ https://www.itdaan.com/tw/18d29a2d6d9a17c524919f7821b3254b
 Q14: oracle中哪些语句需要COMMIT<br />
 Solution: COMMIT操作非常重要，比如UPDATE后，没有及时COMMIT，
 很容易导致死锁问题。就好比我们想对一个文件一边写入，一边删除一样。
-类似的，python也有个进程锁GIL锁（全局解释器锁）<br />
+类似的，python也有个进程锁GIL锁（全局解释器锁）。<br />
+<br />
 DDL(数据定义语言) - CREATE、ALTER、DROP这些语句自动提交，无需用COMMIT提交。<br />
 DQL(数据查询语言) - SELECT查询语句不存在提交问题。<br />
 DML(数据操纵语言) - INSERT、UPDATE、DELETE 这些语句需要COMMIT才能提交。<br />
@@ -380,7 +381,7 @@ References:<br />
 https://stackoverflow.com/questions/62404502/using-dasks-new-to-sql-for-improved-efficiency-memory-speed-or-alternative-to
 
 Q20: oracle得到两个日期相差的分钟数<br />
-Solution: 需要注意的是，两个日期相减默认得到的是天数，因此*24*6可以得到分钟数；
+Solution: 需要注意的是，两个日期相减默认得到的是天数，因此\*24\*6可以得到分钟数；
 其次，24h制的时分秒表达是HH24:MI:SS，而不是HH:MM:SS。<br />
 Code:
 ```sql
