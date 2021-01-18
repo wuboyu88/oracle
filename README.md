@@ -12,7 +12,7 @@
    3、参考资料 <br />
    
 ##
-Q1: oracle不像其他sql语言一样，可以用drop table if exists table_name这种方式删表。
+**Q1**: oracle不像其他sql语言一样，可以用drop table if exists table_name这种方式删表。
 那么在oracle中如何实现类似的功能呢？<br />
 Code:
 ```sql
