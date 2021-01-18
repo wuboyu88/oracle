@@ -290,8 +290,20 @@ import cx_Oracle
 import csv
 
 
-def oracle_to_csv(table_name_or_sql_str, output_file_path, username='****', password='****', host='****',
-                  port='****', service_name='****', is_sql_str=False):
+def oracle_to_csv(table_name_or_sql_str, output_file_path, username, password, host, port, service_name, 
+                  is_sql_str=False):
+    """
+    oracle下载数据到csv
+    :param table_name_or_sql_str: 表名或者sql语句
+    :param output_file_path: csv文件名
+    :param username: oracle用户名
+    :param password: oracle密码
+    :param host: oracle主机地址
+    :param port: oracle端口号
+    :param service_name: oracle服务名
+    :param is_sql_str: 是否是sql语句
+    :return: 
+    """
     db = cx_Oracle.connect(username, password, '{}:{}/{}'.format(host, port, service_name))
 
     print_header = True
@@ -330,34 +342,39 @@ from dask.diagnostics import ProgressBar
 from sqlalchemy import create_engine
 from sqlalchemy.types import VARCHAR
 
-username = '****'
-password = '****'
-host = '****'
-port = '****'
-service_name = '****'
-table_name = '****'
-file_name = '****'
-npartitions = 10
-                                                                     
-engine = create_engine('oracle+cx_oracle://{}:{}@{}:{}/?service_name={}'.format(username, password, host, port,
-                                                                                service_name))
-conn = engine.raw_connection()
 
-df_result = pd.read_csv(file_name)
-dd_result_all = dd.from_pandas(df_result, npartitions=npartitions)
+def csv_to_oracle(file_name, table_name, username, password, host, port, service_name, npartitions=10, dtype=None):
+    """
+    上传csv文件到oracle
+    :param file_name: csv文件名称
+    :param table_name: oracle表名
+    :param username: oracle用户名
+    :param password: oracle密码
+    :param host: oracle主机地址
+    :param port: oracle端口号
+    :param service_name: oracle服务名
+    :param npartitions: 上传文件的拆分数
+    :param dtype: 上传到oracle的数据类型, 例如dtype={'id': VARCHAR(11)}
+    :return: 
+    """
+    engine = create_engine('oracle+cx_oracle://{}:{}@{}:{}/?service_name={}'.format(username, password, host, port,
+                                                                                    service_name))
+    conn = engine.raw_connection()
 
-pbar_rows = 0
+    df_result = pd.read_csv(file_name)
+    dd_result_all = dd.from_pandas(df_result, npartitions=npartitions)
+    
+    pbar_rows = 0
 
-for i in range(dd_result_all.npartitions):
-    dd_partition = dd_result_all.get_partition(i)
-    with ProgressBar():
-        dd_partition.to_sql(table_name, engine, if_exists='append', index=False,
-                            dtype={'id': VARCHAR(11)})
-    pbar_rows += len(dd_partition)
-    all_rows = len(dd_result_all)
-    pbar_rate = round(pbar_rows / all_rows, 2) * 100
-    print('python logging: [{}%({}/{}) rows insert finished]'.format(pbar_rate, pbar_rows, all_rows))
-conn.close()
+    for i in range(dd_result_all.npartitions):
+        dd_partition = dd_result_all.get_partition(i)
+        with ProgressBar():
+            dd_partition.to_sql(table_name, engine, if_exists='append', index=False, dtype=dtype)
+        pbar_rows += len(dd_partition)
+        all_rows = len(dd_result_all)
+        pbar_rate = round(pbar_rows / all_rows, 2) * 100
+        print('python logging: [{}%({}/{}) rows insert finished]'.format(pbar_rate, pbar_rows, all_rows))
+    conn.close()
 ```
 References:<br />
 https://stackoverflow.com/questions/62404502/using-dasks-new-to-sql-for-improved-efficiency-memory-speed-or-alternative-to
