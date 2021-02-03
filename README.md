@@ -439,9 +439,9 @@ https://www.cnblogs.com/jason2018524/p/10288258.html
 **Q23**: oracle中delete之后如何恢复数据<br />
 **Code**:
 ```sql
-1.假如delete之后没有执行commit，则只需要执行rollback;
-2.假如是通过truncate操作进行删除则无法恢复
-3.假如delete之后执行了commit，则可以通过以下方式进行恢复，其中下面的时间点是执行delete之前的
+1.假如DELETE之后没有执行COMMIT，则只需要执行ROLLBACK；
+2.假如是通过TRUNCATE操作进行删除则无法恢复；
+3.假如DELETE之后执行了COMMIT，则可以通过以下方式进行恢复，其中下面的时间点是执行delete之前的
   某个时间点，如果记不起来可以多试几次看看。
   SELECT * FROM table_name AS OF TIMESTAMP TO_TIMESTAMP('2016-08-11 16:12:11', 'yyyy-mm-dd hh24:mi:ss');
   ALTER TABLE table_name ENABLE ROW MOVEMENT;
