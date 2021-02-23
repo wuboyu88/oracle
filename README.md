@@ -439,16 +439,55 @@ https://www.cnblogs.com/jason2018524/p/10288258.html
 **Q23**: oracle中delete之后如何恢复数据<br />
 **Code**:
 ```sql
-1.假如DELETE之后没有执行COMMIT，则只需要执行ROLLBACK；
-2.假如是通过TRUNCATE操作进行删除则无法恢复；
-3.假如DELETE之后执行了COMMIT，则可以通过以下方式进行恢复，其中下面的时间点是执行delete之前的
-  某个时间点，如果记不起来可以多试几次看看。
-  SELECT * FROM table_name AS OF TIMESTAMP TO_TIMESTAMP('2016-08-11 16:12:11', 'yyyy-mm-dd hh24:mi:ss');
-  ALTER TABLE table_name ENABLE ROW MOVEMENT;
-  FLASHBACK TABLE table_name TO TIMESTAMP TO_TIMESTAMP('2016-08-11 16:12:11', 'yyyy-mm-dd hh24:mi:ss');
+# 1.假如DELETE之后没有执行COMMIT，则只需要执行ROLLBACK；
+# 2.假如是通过TRUNCATE操作进行删除则无法恢复；
+# 3.假如DELETE之后执行了COMMIT，则可以通过以下方式进行恢复，其中下面的时间点是执行delete之前的
+#   某个时间点，如果记不起来可以多试几次看看。
+SELECT * FROM table_name AS OF TIMESTAMP TO_TIMESTAMP('2016-08-11 16:12:11', 'yyyy-mm-dd hh24:mi:ss');
+ALTER TABLE table_name ENABLE ROW MOVEMENT;
+FLASHBACK TABLE table_name TO TIMESTAMP TO_TIMESTAMP('2016-08-11 16:12:11', 'yyyy-mm-dd hh24:mi:ss');
 ```
 **References**:<br />
 https://blog.csdn.net/zl834205311/article/details/86605494
+
+##
+**Q24**: oracle基于已经存在的表建一个空表<br />
+**Code**:
+```sql
+CREATE TABLE new_table
+  AS (SELECT *
+      FROM old_table WHERE 1=2);
+```
+**References**:<br />
+https://www.techonthenet.com/oracle/tables/create_table2.php#:~:text=Answer%3A%20To%20do%20this%2C%20the,companies%20WHERE%201%3D2)%3B
+
+##
+**Q25**: oracle将一个大表拆分成几个小表<br />
+**Code**:
+```sql
+# 例如我们需要将一个大表拆分成2个小表便于数据同步，下面通过一个完整的例子来阐述这一过程
+# 1.建立小表
+CREATE TABLE small_table1
+  AS (SELECT t.*, num
+      FROM big_table t WHERE 1=2);
+
+CREATE TABLE small_table2
+  AS (SELECT t.*, num
+      FROM big_table t WHERE 1=2);
+
+# 2.插入数据
+INSERT ALL
+WHEN num=1 THEN INTO small_table1
+WHEN num=2 THEN INTO small_table2
+SELECT t.*, NTILE OVER (ORDER BY NULL) AS num
+FROM big_table t;
+
+# 3.删除num列
+ALTER TABLE small_table1 DROP COLUMN num;
+ALTER TABLE small_table2 DROP COLUMN num;
+```
+**References**:<br />
+https://stackoverflow.com/questions/36335406/sql-how-would-you-split-a-100-000-records-from-a-oracle-table-into-5-chunks
 
 # TO BE CONTINUE
 ## License
