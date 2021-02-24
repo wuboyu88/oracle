@@ -489,6 +489,30 @@ ALTER TABLE small_table2 DROP COLUMN num;
 **References**:<br />
 https://stackoverflow.com/questions/36335406/sql-how-would-you-split-a-100-000-records-from-a-oracle-table-into-5-chunks
 
+##
+**Q26**: oracle not in查不出数据的坑<br />
+**Code**:
+```sql
+# 当B表的id中有null时,此时数据查询不到 
+# 错误使用方法
+SELECT *
+  FROM A a
+  WHERE a.id NOT IN
+    (SELECT b.id
+          FROM B b);
+
+# 正确使用方法
+SELECT *
+  FROM A a
+  WHERE a.id NOT IN
+    (SELECT b.id
+          FROM B b
+           WHERE b.id IS NOT NULL
+     );
+```
+**References**:<br />
+https://blog.csdn.net/qq_37406548/article/details/90406874
+
 # TO BE CONTINUE
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
