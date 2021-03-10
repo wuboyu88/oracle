@@ -513,6 +513,17 @@ SELECT *
 **References**:<br />
 https://blog.csdn.net/qq_37406548/article/details/90406874
 
+##
+**Q27**: oracle将某列的值合并拼接为字符串<br />
+**Code**:
+```sql
+# 对每个id将name列按照dt的顺序进行合并
+SELECT id, LISTAGG(name, ' ') WITHIN GROUP (ORDER BY dt) AS names
+FROM table_name GROUP BY id;
+```
+**References**:<br />
+https://stackoverflow.com/questions/4686543/sql-query-to-concatenate-column-values-from-multiple-rows-in-oracle
+
 # TO BE CONTINUE
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
