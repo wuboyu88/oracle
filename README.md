@@ -544,7 +544,7 @@ https://stackoverflow.com/questions/4686543/sql-query-to-concatenate-column-valu
    -------  ---------------
    1,       a,b
    2,       a,b,c
--- cust_no,product_type
+
 SELECT cust_no, CAST(WM_CONCAT(DISTINCT product_type) AS VARCHAR2(100)) AS product_type_set 
 FROM table_name GROUP BY cust_no;
 ```
