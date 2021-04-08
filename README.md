@@ -200,11 +200,11 @@ https://stackoverflow.com/questions/1079949/when-do-i-need-to-use-a-semicolon-vs
 这不是普通的注释。<br />
 **Code**:
 ```sql
-# 1.CREATE TABLE
+-- 1.CREATE TABLE
 CREATE TABLE table1 PARALLEL NOLOGGING AS
 SELECT * FROM table2;
 /
-# 2.INSERT INTO & SELECT
+-- 2.INSERT INTO & SELECT
 INSERT INTO /*+ APPEND PARALLEL(table1) NOLOGGING */ table1
   SELECT /*+ PARALLEL NOLOGGING */ a, b FROM table2;
 /
@@ -250,7 +250,7 @@ https://blog.csdn.net/wtl1992/article/details/100553738
 **Q15**: oracle中如何创建分区表<br />
 **Code**:
 ```sql
-# 例子中是以dt作为分区字段，按天创建分区；将2018-11-01之前的当成一个分区
+-- 例子中是以dt作为分区字段，按天创建分区；将2018-11-01之前的当成一个分区
 CREATE TABLE table1
 (
 id VARCHAR(99),
@@ -424,7 +424,7 @@ Not found
 **Q22**: oracle中connect by level得到连续的月份<br />
 **Code**:
 ```sql
-# 得到从2018年1月31号起两年的月份
+-- 得到从2018年1月31号起两年的月份
 SELECT ADD_MONTHS(TO_DATE('2018-01-31', 'YYYY-MM-DD'), level - 1) m
   FROM dual
 CONNECT BY LEVEL <=
@@ -439,10 +439,10 @@ https://www.cnblogs.com/jason2018524/p/10288258.html
 **Q23**: oracle中delete之后如何恢复数据<br />
 **Code**:
 ```sql
-# 1.假如DELETE之后没有执行COMMIT，则只需要执行ROLLBACK；
-# 2.假如是通过TRUNCATE操作进行删除则无法恢复；
-# 3.假如DELETE之后执行了COMMIT，则可以通过以下方式进行恢复，其中下面的时间点是执行delete之前的
-#   某个时间点，如果记不起来可以多试几次看看。
+-- 1.假如DELETE之后没有执行COMMIT，则只需要执行ROLLBACK；
+-- 2.假如是通过TRUNCATE操作进行删除则无法恢复；
+-- 3.假如DELETE之后执行了COMMIT，则可以通过以下方式进行恢复，其中下面的时间点是执行delete之前的
+--   某个时间点，如果记不起来可以多试几次看看。
 SELECT * FROM table_name AS OF TIMESTAMP TO_TIMESTAMP('2016-08-11 16:12:11', 'yyyy-mm-dd hh24:mi:ss');
 ALTER TABLE table_name ENABLE ROW MOVEMENT;
 FLASHBACK TABLE table_name TO TIMESTAMP TO_TIMESTAMP('2016-08-11 16:12:11', 'yyyy-mm-dd hh24:mi:ss');
@@ -465,8 +465,8 @@ https://www.techonthenet.com/oracle/tables/create_table2.php#:~:text=Answer%3A%2
 **Q25**: oracle将一个大表拆分成几个小表<br />
 **Code**:
 ```sql
-# 例如我们需要将一个大表拆分成2个小表便于数据同步，下面通过一个完整的例子来阐述这一过程
-# 1.建立小表
+-- 例如我们需要将一个大表拆分成2个小表便于数据同步，下面通过一个完整的例子来阐述这一过程
+-- 1.建立小表
 CREATE TABLE small_table1
   AS (SELECT t.*, num
       FROM big_table t WHERE 1=2);
@@ -475,14 +475,14 @@ CREATE TABLE small_table2
   AS (SELECT t.*, num
       FROM big_table t WHERE 1=2);
 
-# 2.插入数据
+-- 2.插入数据
 INSERT ALL
 WHEN num=1 THEN INTO small_table1
 WHEN num=2 THEN INTO small_table2
 SELECT t.*, NTILE OVER (ORDER BY NULL) AS num
 FROM big_table t;
 
-# 3.删除num列
+-- 3.删除num列
 ALTER TABLE small_table1 DROP COLUMN num;
 ALTER TABLE small_table2 DROP COLUMN num;
 ```
@@ -493,15 +493,15 @@ https://stackoverflow.com/questions/36335406/sql-how-would-you-split-a-100-000-r
 **Q26**: oracle not in查不出数据的坑<br />
 **Code**:
 ```sql
-# 当B表的id中有null时,此时数据查询不到 
-# 错误使用方法
+-- 当B表的id中有null时,此时数据查询不到 
+-- 错误使用方法
 SELECT *
   FROM A a
   WHERE a.id NOT IN
     (SELECT b.id
           FROM B b);
 
-# 正确使用方法
+-- 正确使用方法
 SELECT *
   FROM A a
   WHERE a.id NOT IN
@@ -517,12 +517,39 @@ https://blog.csdn.net/qq_37406548/article/details/90406874
 **Q27**: oracle将某列的值合并拼接为字符串<br />
 **Code**:
 ```sql
-# 对每个id将name列按照dt的顺序进行合并
+-- 对每个id将name列按照dt的顺序进行合并
 SELECT id, LISTAGG(name, ' ') WITHIN GROUP (ORDER BY dt) AS names
 FROM table_name GROUP BY id;
 ```
 **References**:<br />
 https://stackoverflow.com/questions/4686543/sql-query-to-concatenate-column-values-from-multiple-rows-in-oracle
+
+##
+**Q28**: oracle中WM_CONCAT函数的使用<br />
+**Code**:
+```sql
+# 统计每个客户所有购买的产品种类集合
+-- 输入:
+   cust_no, product_type
+   -------  -----------
+   1,       b
+   1,       a
+   1,       a
+   2,       c
+   2,       c
+   2,       a
+   2,       b 
+-- 输出:
+   cust_no, product_type_set
+   -------  ---------------
+   1,       a,b
+   2,       a,b,c
+-- cust_no,product_type
+SELECT cust_no, CAST(WM_CONCAT(DISTINCT product_type) AS VARCHAR2(100)) AS product_type_set 
+FROM table_name GROUP BY cust_no;
+```
+**References**:<br />
+http://www.dba-oracle.com/t_wm_concat_sql_function.htm
 
 # TO BE CONTINUE
 ## License
