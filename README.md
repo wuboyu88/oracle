@@ -551,6 +551,15 @@ FROM table_name GROUP BY cust_no;
 **References**:<br />
 http://www.dba-oracle.com/t_wm_concat_sql_function.htm
 
+##
+**Q29**: 如何恢复oracle中误删除表(drop掉的)？<br />
+**Code**:
+```sql
+FLASHBACK TABLE test_drop TO BEFROE DROP;
+```
+**References**:<br />
+https://blog.csdn.net/zhupanlinch/article/details/103025453
+
 # TO BE CONTINUE
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
