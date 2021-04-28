@@ -560,6 +560,17 @@ FLASHBACK TABLE test_drop TO BEFROE DROP;
 **References**:<br />
 https://blog.csdn.net/zhupanlinch/article/details/103025453
 
+##
+**Q30**: cx_Oracle中文乱码问号解决方案<br />
+**Code**:
+```python
+import cx_Oracle
+
+conn = cx_Oracle.connect(connectString, encoding = 'UTF-8', nencoding = 'UTF-8')
+```
+**References**:<br />
+https://blog.csdn.net/haoyinpeng/article/details/80325437
+
 # TO BE CONTINUE
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
